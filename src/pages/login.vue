@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { VForm } from 'vuetify/components'
-import type { LoginResponse } from '@/@fake-db/types'
 import { useAppAbility } from '@/plugins/casl/useAppAbility'
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import axios from '@axios'
+import axios, { addTokenToAxios } from '@axios'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { emailValidator, requiredValidator } from '@validators'
+import { requiredValidator } from '@validators'
+import { VForm } from 'vuetify/components'
 
+import { LoginResponse } from '@/@types/Employee'
+import { ResponseError } from '@/@types/Error'
 import authV2LoginIllustrationBorderedDark from '@/assets/images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@/assets/images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@/assets/images/pages/auth-v2-login-illustration-dark.png'
 import authV2LoginIllustrationLight from '@/assets/images/pages/auth-v2-login-illustration-light.png'
 import authV2MaskDark from '@/assets/images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@/assets/images/pages/misc-mask-light.png'
+import { AxiosError } from 'axios'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
@@ -33,33 +35,28 @@ const errors = ref<Record<string, string | undefined>>({
 })
 
 const refVForm = ref<VForm>()
-const email = ref('admin@demo.com')
-const password = ref('admin')
+const username = ref('')
+const password = ref('')
 const rememberMe = ref(false)
 
-const login = () => {
-  axios.post<LoginResponse>('/auth/login', { email: email.value, password: password.value })
-    .then(r => {
-      const { accessToken, userData, userAbilities } = r.data
-
-      localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
-      ability.update(userAbilities)
-
-      localStorage.setItem('userData', JSON.stringify(userData))
-      localStorage.setItem('accessToken', JSON.stringify(accessToken))
-
-      if (route.query.to)
-        router.replace(String(route.query.to))
-      else router.replace('/')
-
-      return null
-    })
-    .catch(e => {
-      const { errors: formErrors } = e.response.data
-
-      errors.value = formErrors
-      console.error(e.response.data)
-    })
+const login = async () => {
+  try {
+    const {data} = await axios.post<LoginResponse>('/employee/login', { username: username.value, password: password.value })
+    console.log({data});   
+    const {token,  } = data;
+    addTokenToAxios(token);
+    sessionStorage.setItem('accessToken', token);
+    if (rememberMe.value) {
+      localStorage.setItem('accessToken', token);
+      localStorage.setItem('userData', JSON.stringify(data))
+    }
+    
+  }
+  catch(err) {
+    const typedError = err as AxiosError<ResponseError>;
+      console.error(typedError.response?.data);
+      
+  }
 }
 
 const onSubmit = () => {
@@ -141,11 +138,11 @@ const onSubmit = () => {
               <!-- email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="email"
-                  label="Email"
-                  type="email"
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  v-model="username"
+                  label="Username"
+                  type="text"
+                  :rules="[requiredValidator]"
+                  :error-messages="errors.username"
                 />
               </VCol>
 
