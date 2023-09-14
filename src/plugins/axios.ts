@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const axiosIns = axios.create({
   baseURL: "https://dash.sadeemlight.com/dash/api/v1",
@@ -39,7 +39,13 @@ axiosIns.defaults.transformResponse = function (data: any, headers: any) {
 };
 
 export const addTokenToAxios = (token: string) => {
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  axiosIns.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
+
+axiosIns.interceptors.request.use((config: AxiosRequestConfig) => {
+  const token = sessionStorage.getItem("accessToken");
+  if (config.headers) config.headers["Authorization"] = `Bearer ${token}`;
+  return config;
+});
 
 export default axiosIns;

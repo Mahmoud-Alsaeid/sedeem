@@ -50,7 +50,7 @@ const login = async () => {
       localStorage.setItem('accessToken', token);
       localStorage.setItem('userData', JSON.stringify(data))
     }
-    
+    router.replace('/students')
   }
   catch(err) {
     const typedError = err as AxiosError<ResponseError>;

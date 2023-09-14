@@ -1,11 +1,16 @@
-import { breakpointsVuetify } from '@vueuse/core'
-import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layouts/enums'
-import type { Config } from '@layouts/types'
+import {
+  AppContentLayoutNav,
+  ContentWidth,
+  FooterType,
+  NavbarType,
+} from "@layouts/enums";
+import type { Config } from "@layouts/types";
+import { breakpointsVuetify } from "@vueuse/core";
 
 export const config: Config = {
   app: {
-    title: 'Title',
-    logo: h('img', { src: '/src/assets/logo.svg' }),
+    title: "Title",
+    logo: h("img", { src: "/src/assets/logo.svg" }),
 
     // logo: () => h('img', { src: 'assets/colored-logo.png' }, null),
     contentWidth: ref(ContentWidth.Boxed),
@@ -21,17 +26,17 @@ export const config: Config = {
   footer: { type: ref(FooterType.Static) },
   verticalNav: {
     isVerticalNavCollapsed: ref(false),
-    defaultNavItemIconProps: { icon: 'tabler-circle' },
+    defaultNavItemIconProps: { icon: "tabler-circle" },
   },
   horizontalNav: {
-    type: ref('sticky'),
+    type: ref("sticky"),
   },
   icons: {
-    chevronDown: { icon: 'tabler-chevron-down' },
-    chevronRight: { icon: 'tabler-chevron-right' },
-    close: { icon: 'tabler-x' },
-    verticalNavPinned: { icon: 'tabler-circle-dot' },
-    verticalNavUnPinned: { icon: 'tabler-circle' },
-    sectionTitlePlaceholder: { icon: 'tabler-minus' },
+    chevronDown: { icon: "tabler-chevron-down" },
+    chevronRight: { icon: "tabler-chevron-right" },
+    close: { icon: "tabler-x" },
+    verticalNavPinned: { icon: "tabler-circle-dot" },
+    verticalNavUnPinned: { icon: "tabler-circle" },
+    sectionTitlePlaceholder: { icon: "tabler-minus" },
   },
-}
+};
